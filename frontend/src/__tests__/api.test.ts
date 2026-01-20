@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('API Client Configuration', () => {
   const API_URL = 'http://localhost:3000/api';
