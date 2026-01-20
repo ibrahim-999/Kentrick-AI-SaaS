@@ -9,7 +9,6 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -23,7 +22,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle auth errors
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -35,7 +33,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Auth API
 export const authApi = {
   register: (email: string, password: string, name?: string) =>
     apiClient.post('/auth/register', { email, password, name }),
@@ -46,7 +43,6 @@ export const authApi = {
   getMe: () => apiClient.get('/auth/me'),
 };
 
-// Upload API
 export const uploadApi = {
   upload: (file: File) => {
     const formData = new FormData();
@@ -63,7 +59,6 @@ export const uploadApi = {
   delete: (id: string) => apiClient.delete(`/uploads/${id}`),
 };
 
-// Insights API
 export const insightsApi = {
   analyze: (uploadId: string) =>
     apiClient.post('/insights/analyze', { uploadId }),
