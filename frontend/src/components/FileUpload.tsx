@@ -27,7 +27,6 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       setProgress(0);
 
       try {
-        // Simulate progress
         const progressInterval = setInterval(() => {
           setProgress((prev) => Math.min(prev + 10, 90));
         }, 100);
@@ -65,7 +64,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       'image/gif': ['.gif'],
       'image/webp': ['.webp'],
     },
-    maxSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 10 * 1024 * 1024,
     multiple: false,
     disabled: isUploading,
   });
