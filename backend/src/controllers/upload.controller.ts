@@ -36,7 +36,7 @@ export const uploadFile = asyncHandler(
       throw new AppError('File too large. Maximum size is 10MB', 400);
     }
 
-    const { key, url } = await storageService.uploadFile(req.file, req.user.userId);
+    const { url } = await storageService.uploadFile(req.file, req.user.userId);
 
     const upload = await prisma.upload.create({
       data: {
