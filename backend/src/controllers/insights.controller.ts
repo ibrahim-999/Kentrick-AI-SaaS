@@ -30,7 +30,6 @@ export const analyzeUpload = asyncHandler(
       throw new AppError('Upload not found', 404);
     }
 
-    // Check if insights already exist
     const existingInsights = await prisma.insight.findMany({
       where: { uploadId },
     });
@@ -50,23 +49,19 @@ export const analyzeUpload = asyncHandler(
       return;
     }
 
-    // Get file content
     const key = upload.fileUrl.split('/').slice(-2).join('/');
     let analysisResult;
 
     if (upload.fileType.startsWith('image/')) {
-      // Image analysis
       const fileBuffer = await storageService.getFileContent(key);
       const base64 = fileBuffer.toString('base64');
       analysisResult = await aiService.analyzeImage(base64, upload.fileType);
     } else {
-      // Text analysis
       const fileBuffer = await storageService.getFileContent(key);
       const textContent = fileBuffer.toString('utf-8');
       analysisResult = await aiService.analyzeText(textContent);
     }
 
-    // Store insights
     const insightTypes = upload.fileType.startsWith('image/')
       ? ['image_analysis']
       : ['text_analysis'];
@@ -107,7 +102,6 @@ export const getInsights = asyncHandler(
 
     const { uploadId } = req.params;
 
-    // Verify upload belongs to user
     const upload = await prisma.upload.findFirst({
       where: {
         id: uploadId,
