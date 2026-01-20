@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { config } from '../config/env.js';
 import { AuthenticatedRequest, JwtPayload } from '../types/index.js';
 import { AppError } from './errorHandler.js';
@@ -31,7 +31,8 @@ export const authenticate = (
 };
 
 export const generateToken = (payload: JwtPayload): string => {
-  return jwt.sign(payload, config.jwt.secret, {
-    expiresIn: config.jwt.expiresIn,
-  });
+  const options: SignOptions = {
+    expiresIn: '7d',
+  };
+  return jwt.sign(payload, config.jwt.secret, options);
 };
