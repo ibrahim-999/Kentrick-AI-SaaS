@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  uploads   Upload[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Upload {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename  String
+  fileType  String
+  fileSize  Int
+  fileUrl   String
+  insights  Insight[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Insight {
+  id        String   @id @default(uuid())
+  uploadId  String
+  upload    Upload   @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  type      String   // 'summary', 'sentiment', 'key_insights', 'image_description'
+  content   Json
+  createdAt DateTime @default(now())
+
+  @@index([uploadId])
+}
