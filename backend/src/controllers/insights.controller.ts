@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { aiService } from '../services/ai.service.js';
 import { storageService } from '../services/storage.service.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
@@ -77,7 +77,7 @@ export const analyzeUpload = asyncHandler(
           data: {
             uploadId,
             type,
-            content: analysisResult,
+            content: analysisResult as Prisma.InputJsonValue,
           },
         })
       )
