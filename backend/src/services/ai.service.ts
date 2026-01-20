@@ -63,7 +63,6 @@ Respond ONLY with the JSON object, no additional text.`,
           keyInsights: result.keyInsights || [],
         };
       } catch {
-        // If JSON parsing fails, try to extract meaningful content
         return {
           summary: textContent.text.substring(0, 500),
           sentiment: { label: 'neutral', score: 0.5, explanation: 'Analysis completed' },
