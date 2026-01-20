@@ -20,7 +20,7 @@ export class StorageService {
         accessKeyId: config.s3.accessKeyId,
         secretAccessKey: config.s3.secretAccessKey,
       },
-      forcePathStyle: true, // Required for MinIO
+      forcePathStyle: true,
     });
     this.bucket = config.s3.bucket;
   }
@@ -53,7 +53,7 @@ export class StorageService {
     });
 
     const signedUrl = await getSignedUrl(this.s3Client, command, {
-      expiresIn: 3600, // 1 hour
+      expiresIn: 3600,
     });
 
     return signedUrl;
