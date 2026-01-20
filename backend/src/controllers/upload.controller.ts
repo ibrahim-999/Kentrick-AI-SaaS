@@ -31,7 +31,7 @@ export const uploadFile = asyncHandler(
       throw new AppError('File type not allowed', 400);
     }
 
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024;
     if (req.file.size > maxSize) {
       throw new AppError('File too large. Maximum size is 10MB', 400);
     }
@@ -142,11 +142,9 @@ export const deleteUpload = asyncHandler(
       throw new AppError('Upload not found', 404);
     }
 
-    // Delete from S3
     const key = upload.fileUrl.split('/').slice(-2).join('/');
     await storageService.deleteFile(key);
 
-    // Delete from database (cascades to insights)
     await prisma.upload.delete({
       where: { id },
     });
