@@ -29,7 +29,6 @@ export const errorHandler = (
     return;
   }
 
-  // Prisma errors
   if (err.name === 'PrismaClientKnownRequestError') {
     res.status(400).json({
       success: false,
@@ -38,7 +37,6 @@ export const errorHandler = (
     return;
   }
 
-  // JWT errors
   if (err.name === 'JsonWebTokenError') {
     res.status(401).json({
       success: false,
@@ -55,7 +53,6 @@ export const errorHandler = (
     return;
   }
 
-  // Default error
   res.status(500).json({
     success: false,
     error: 'Internal server error',
