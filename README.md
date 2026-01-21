@@ -2,6 +2,8 @@
 
 AI-powered document analysis platform built with React, Node.js, and Claude AI.
 
+![Dashboard Screenshot](docs/images/dashboard-screenshot.png)
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -32,7 +34,7 @@ make start
 Services will be available at:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
-- MinIO Console: http://localhost:9001 (minioadmin/minioadmin)
+- MinIO Console: http://localhost:9003 (minioadmin/minioadmin)
 
 ## Environment Variables
 
@@ -166,7 +168,6 @@ Maximum file size: 10MB
 
 ## Future Improvements
 
-- File preview functionality
 - Batch file analysis
 - Export to PDF/CSV
 - Real-time analysis progress with WebSockets
