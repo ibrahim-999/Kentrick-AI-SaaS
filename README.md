@@ -25,7 +25,7 @@ AI-powered document analysis platform built with React, Node.js, and Claude AI.
 ## Quick Start
 
 ```bash
-git clone https://github.com/yourusername/kentrick-ai-saas.git
+git clone https://github.com/ibrahim-999/Kentrick-AI-SaaS
 cd kentrick-ai-saas
 cp .env.example .env
 make start
