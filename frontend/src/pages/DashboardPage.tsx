@@ -11,6 +11,7 @@ interface Upload {
   fileSize: number;
   createdAt: string;
   hasInsights?: boolean;
+  previewUrl?: string;
 }
 
 interface Insight {
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPreview, setCurrentPreview] = useState<string | null>(null);
 
   const fetchUploads = useCallback(async () => {
     try {
@@ -54,11 +56,13 @@ export default function DashboardPage() {
     setUploads((prev) => [upload, ...prev]);
     setSelectedUpload(upload);
     setInsights([]);
+    setCurrentPreview(upload.previewUrl || null);
   };
 
   const handleSelectUpload = async (upload: Upload) => {
     setSelectedUpload(upload);
     setError(null);
+    setCurrentPreview(upload.previewUrl || null);
 
     try {
       const response = await insightsApi.get(upload.id);
@@ -262,6 +266,17 @@ export default function DashboardPage() {
                   {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
                       {error}
+                    </div>
+                  )}
+
+                  {currentPreview && selectedUpload?.fileType.startsWith('image/') && (
+                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-700 mb-3">Uploaded Image</h3>
+                      <img
+                        src={currentPreview}
+                        alt={selectedUpload.filename}
+                        className="max-h-64 mx-auto rounded-lg object-contain shadow-sm"
+                      />
                     </div>
                   )}
 
