@@ -1,0 +1,965 @@
+{
+  "info": {
+    "_postman_id": "kentrick-ai-collection",
+    "name": "Kentrick AI API",
+    "description": "API collection for Kentrick AI SaaS Dashboard.\n\n## Getting Started\n\n1. Import this collection and the environment file\n2. Select the \"Kentrick AI - Local\" environment\n3. Run \"Register\" or \"Login\" to get a JWT token\n4. The token is automatically saved to the environment\n5. All authenticated endpoints will use the token automatically\n\n## Endpoints\n\n### Authentication\n- POST /auth/register - Create new user\n- POST /auth/login - Login and get JWT\n- GET /auth/me - Get current user info\n\n### File Upload\n- POST /upload - Upload a file\n- GET /uploads - List all uploads\n- GET /uploads/:id - Get specific upload\n- DELETE /uploads/:id - Delete upload\n\n### AI Insights\n- POST /insights/analyze - Analyze file with AI\n- GET /insights/:uploadId - Get insights for upload\n- GET /insights/status - Check AI service status",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{API_URL}}"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "User authentication endpoints",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.token).to.be.a('string');",
+                  "    pm.environment.set(\"AUTH_TOKEN\", jsonData.data.token);",
+                  "    pm.environment.set(\"USER_ID\", jsonData.data.user.id);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has user data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.user).to.have.property('id');",
+                  "    pm.expect(jsonData.data.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\",\n    \"password\": \"{{TEST_PASSWORD}}\",\n    \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{API_URL}}/auth/register",
+              "host": ["{{API_URL}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account.\n\n**Request Body:**\n- `email` (required): User email address\n- `password` (required): Password (min 6 characters)\n- `name` (optional): User display name\n\n**Response:**\n- `token`: JWT authentication token\n- `user`: User object with id, email, name"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"name\": \"Test User\"\n}"
+                },
+                "url": {
+                  "raw": "{{API_URL}}/auth/register",
+                  "host": ["{{API_URL}}"],
+                  "path": ["auth", "register"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"user\": {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"test@example.com\",\n            \"name\": \"Test User\"\n        }\n    }\n}"
+            },
+            {
+              "name": "Email Already Exists",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"existing@example.com\",\n    \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{API_URL}}/auth/register",
+                  "host": ["{{API_URL}}"],
+                  "path": ["auth", "register"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": false,\n    \"error\": \"Email already registered\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.token).to.be.a('string');",
+                  "    pm.environment.set(\"AUTH_TOKEN\", jsonData.data.token);",
+                  "    pm.environment.set(\"USER_ID\", jsonData.data.user.id);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has user data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.user).to.have.property('id');",
+                  "    pm.expect(jsonData.data.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}"
+            },
+            "url": {
+              "raw": "{{API_URL}}/auth/login",
+              "host": ["{{API_URL}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with existing credentials.\n\n**Request Body:**\n- `email` (required): User email address\n- `password` (required): User password\n\n**Response:**\n- `token`: JWT authentication token (valid for 7 days)\n- `user`: User object with id, email, name"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{API_URL}}/auth/login",
+                  "host": ["{{API_URL}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n        \"user\": {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"test@example.com\",\n            \"name\": \"Test User\"\n        }\n    }\n}"
+            },
+            {
+              "name": "Invalid Credentials",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"wrongpassword\"\n}"
+                },
+                "url": {
+                  "raw": "{{API_URL}}/auth/login",
+                  "host": ["{{API_URL}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": false,\n    \"error\": \"Invalid credentials\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has user data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.user).to.have.property('id');",
+                  "    pm.expect(jsonData.data.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_URL}}/auth/me",
+              "host": ["{{API_URL}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get the currently authenticated user's information.\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**Response:**\n- `user`: User object with id, email, name, createdAt"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/auth/me",
+                  "host": ["{{API_URL}}"],
+                  "path": ["auth", "me"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"user\": {\n            \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"email\": \"test@example.com\",\n            \"name\": \"Test User\",\n            \"createdAt\": \"2024-01-15T10:30:00.000Z\"\n        }\n    }\n}"
+            },
+            {
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_URL}}/auth/me",
+                  "host": ["{{API_URL}}"],
+                  "path": ["auth", "me"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": false,\n    \"error\": \"No token provided\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "File Upload",
+      "description": "File upload and management endpoints",
+      "item": [
+        {
+          "name": "Upload File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has upload data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.upload).to.have.property('id');",
+                  "    pm.expect(jsonData.data.upload).to.have.property('filename');",
+                  "    pm.expect(jsonData.data.upload).to.have.property('fileUrl');",
+                  "    pm.environment.set(\"UPLOAD_ID\", jsonData.data.upload.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{API_URL}}/upload",
+              "host": ["{{API_URL}}"],
+              "path": ["upload"]
+            },
+            "description": "Upload a file for AI analysis.\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**Body (form-data):**\n- `file`: The file to upload\n\n**Supported File Types:**\n- Text: TXT, CSV, MD, JSON\n- Images: JPG, PNG, GIF, WEBP\n\n**Max File Size:** 10MB\n\n**Response:**\n- `upload`: Upload object with id, filename, fileType, fileSize, fileUrl"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "sample.txt"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{API_URL}}/upload",
+                  "host": ["{{API_URL}}"],
+                  "path": ["upload"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"upload\": {\n            \"id\": \"660e8400-e29b-41d4-a716-446655440001\",\n            \"filename\": \"sample.txt\",\n            \"fileType\": \"text/plain\",\n            \"fileSize\": 1024,\n            \"fileUrl\": \"https://storage.example.com/uploads/abc123.txt\",\n            \"createdAt\": \"2024-01-15T10:35:00.000Z\"\n        }\n    }\n}"
+            },
+            {
+              "name": "Invalid File Type",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "malware.exe"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{API_URL}}/upload",
+                  "host": ["{{API_URL}}"],
+                  "path": ["upload"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": false,\n    \"error\": \"Invalid file type. Allowed: txt, csv, md, json, jpg, jpeg, png, gif, webp\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Uploads",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has uploads array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.uploads).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Save first upload ID if exists\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.uploads.length > 0) {",
+                  "        pm.environment.set(\"UPLOAD_ID\", jsonData.data.uploads[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_URL}}/uploads",
+              "host": ["{{API_URL}}"],
+              "path": ["uploads"]
+            },
+            "description": "Get all uploads for the authenticated user.\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**Response:**\n- `uploads`: Array of upload objects"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/uploads",
+                  "host": ["{{API_URL}}"],
+                  "path": ["uploads"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"uploads\": [\n            {\n                \"id\": \"660e8400-e29b-41d4-a716-446655440001\",\n                \"filename\": \"sample.txt\",\n                \"fileType\": \"text/plain\",\n                \"fileSize\": 1024,\n                \"fileUrl\": \"https://storage.example.com/uploads/abc123.txt\",\n                \"createdAt\": \"2024-01-15T10:35:00.000Z\",\n                \"insights\": []\n            }\n        ]\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Upload by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has upload data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.upload).to.have.property('id');",
+                  "    pm.expect(jsonData.data.upload).to.have.property('filename');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_URL}}/uploads/{{UPLOAD_ID}}",
+              "host": ["{{API_URL}}"],
+              "path": ["uploads", "{{UPLOAD_ID}}"]
+            },
+            "description": "Get a specific upload by ID.\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**URL Parameters:**\n- `id`: Upload ID\n\n**Response:**\n- `upload`: Upload object with insights"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/uploads/{{UPLOAD_ID}}",
+                  "host": ["{{API_URL}}"],
+                  "path": ["uploads", "{{UPLOAD_ID}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"upload\": {\n            \"id\": \"660e8400-e29b-41d4-a716-446655440001\",\n            \"filename\": \"sample.txt\",\n            \"fileType\": \"text/plain\",\n            \"fileSize\": 1024,\n            \"fileUrl\": \"https://storage.example.com/uploads/abc123.txt\",\n            \"createdAt\": \"2024-01-15T10:35:00.000Z\",\n            \"insights\": [\n                {\n                    \"id\": \"770e8400-e29b-41d4-a716-446655440002\",\n                    \"type\": \"text_analysis\",\n                    \"content\": {\n                        \"summary\": \"...\",\n                        \"sentiment\": {...},\n                        \"keyInsights\": [...]\n                    },\n                    \"createdAt\": \"2024-01-15T10:40:00.000Z\"\n                }\n            ]\n        }\n    }\n}"
+            },
+            {
+              "name": "Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/uploads/invalid-id",
+                  "host": ["{{API_URL}}"],
+                  "path": ["uploads", "invalid-id"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": false,\n    \"error\": \"Upload not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Upload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response confirms deletion\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_URL}}/uploads/{{UPLOAD_ID}}",
+              "host": ["{{API_URL}}"],
+              "path": ["uploads", "{{UPLOAD_ID}}"]
+            },
+            "description": "Delete an upload and its associated file.\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**URL Parameters:**\n- `id`: Upload ID\n\n**Response:**\n- Success confirmation"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/uploads/{{UPLOAD_ID}}",
+                  "host": ["{{API_URL}}"],
+                  "path": ["uploads", "{{UPLOAD_ID}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Upload deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI Insights",
+      "description": "AI-powered file analysis endpoints",
+      "item": [
+        {
+          "name": "Analyze File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 201\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has insight data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.insight).to.have.property('id');",
+                  "    pm.expect(jsonData.data.insight).to.have.property('content');",
+                  "    pm.environment.set(\"INSIGHT_ID\", jsonData.data.insight.id);",
+                  "});",
+                  "",
+                  "pm.test(\"Insight has analysis content\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var content = jsonData.data.insight.content;",
+                  "    pm.expect(content).to.have.property('summary');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"uploadId\": \"{{UPLOAD_ID}}\"\n}"
+            },
+            "url": {
+              "raw": "{{API_URL}}/insights/analyze",
+              "host": ["{{API_URL}}"],
+              "path": ["insights", "analyze"]
+            },
+            "description": "Analyze an uploaded file using AI (Anthropic Claude).\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**Request Body:**\n- `uploadId`: ID of the upload to analyze\n\n**Response:**\n- `insight`: Insight object with analysis results\n\n**Text Analysis includes:**\n- Summary\n- Sentiment (positive/negative/neutral with score)\n- Key insights\n\n**Image Analysis includes:**\n- Description\n- Detected objects/themes\n- Visual insights"
+          },
+          "response": [
+            {
+              "name": "Text Analysis Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"uploadId\": \"{{UPLOAD_ID}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{API_URL}}/insights/analyze",
+                  "host": ["{{API_URL}}"],
+                  "path": ["insights", "analyze"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"insight\": {\n            \"id\": \"770e8400-e29b-41d4-a716-446655440002\",\n            \"uploadId\": \"660e8400-e29b-41d4-a716-446655440001\",\n            \"type\": \"text_analysis\",\n            \"content\": {\n                \"summary\": \"This document discusses the quarterly sales performance, highlighting a 15% increase in revenue compared to the previous quarter.\",\n                \"sentiment\": {\n                    \"label\": \"positive\",\n                    \"score\": 0.85,\n                    \"explanation\": \"The text contains predominantly positive language about growth and achievements.\"\n                },\n                \"keyInsights\": [\n                    \"Revenue increased by 15% quarter-over-quarter\",\n                    \"Customer acquisition cost decreased by 8%\",\n                    \"New product line contributed 25% of total sales\"\n                ]\n            },\n            \"createdAt\": \"2024-01-15T10:40:00.000Z\"\n        }\n    }\n}"
+            },
+            {
+              "name": "Image Analysis Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"uploadId\": \"{{UPLOAD_ID}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{API_URL}}/insights/analyze",
+                  "host": ["{{API_URL}}"],
+                  "path": ["insights", "analyze"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"insight\": {\n            \"id\": \"770e8400-e29b-41d4-a716-446655440003\",\n            \"uploadId\": \"660e8400-e29b-41d4-a716-446655440002\",\n            \"type\": \"image_analysis\",\n            \"content\": {\n                \"description\": \"A modern office workspace with multiple computer monitors, ergonomic chairs, and natural lighting from large windows.\",\n                \"objects\": [\n                    \"Computer monitors\",\n                    \"Office desk\",\n                    \"Ergonomic chair\",\n                    \"Plants\",\n                    \"Windows\"\n                ],\n                \"themes\": [\n                    \"Professional workspace\",\n                    \"Modern design\",\n                    \"Productivity\"\n                ],\n                \"insights\": [\n                    \"Well-organized workspace optimized for productivity\",\n                    \"Natural lighting suggests attention to employee wellness\",\n                    \"Multi-monitor setup indicates technical or creative work\"\n                ]\n            },\n            \"createdAt\": \"2024-01-15T10:45:00.000Z\"\n        }\n    }\n}"
+            },
+            {
+              "name": "Upload Not Found",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"uploadId\": \"invalid-upload-id\"\n}"
+                },
+                "url": {
+                  "raw": "{{API_URL}}/insights/analyze",
+                  "host": ["{{API_URL}}"],
+                  "path": ["insights", "analyze"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": false,\n    \"error\": \"Upload not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Insights for Upload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has insights array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.insights).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_URL}}/insights/{{UPLOAD_ID}}",
+              "host": ["{{API_URL}}"],
+              "path": ["insights", "{{UPLOAD_ID}}"]
+            },
+            "description": "Get all insights for a specific upload.\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**URL Parameters:**\n- `uploadId`: Upload ID\n\n**Response:**\n- `insights`: Array of insight objects"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/insights/{{UPLOAD_ID}}",
+                  "host": ["{{API_URL}}"],
+                  "path": ["insights", "{{UPLOAD_ID}}"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"insights\": [\n            {\n                \"id\": \"770e8400-e29b-41d4-a716-446655440002\",\n                \"uploadId\": \"660e8400-e29b-41d4-a716-446655440001\",\n                \"type\": \"text_analysis\",\n                \"content\": {\n                    \"summary\": \"...\",\n                    \"sentiment\": {...},\n                    \"keyInsights\": [...]\n                },\n                \"createdAt\": \"2024-01-15T10:40:00.000Z\"\n            }\n        ]\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get AI Service Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has status info\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('available');",
+                  "    pm.expect(jsonData.data).to.have.property('mode');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AUTH_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_URL}}/insights/status",
+              "host": ["{{API_URL}}"],
+              "path": ["insights", "status"]
+            },
+            "description": "Check the AI service status.\n\n**Headers:**\n- `Authorization`: Bearer token (required)\n\n**Response:**\n- `available`: Boolean indicating if AI is available\n- `mode`: \"live\" (real API) or \"mock\" (fallback responses)"
+          },
+          "response": [
+            {
+              "name": "Live Mode",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/insights/status",
+                  "host": ["{{API_URL}}"],
+                  "path": ["insights", "status"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"available\": true,\n        \"mode\": \"live\",\n        \"model\": \"claude-sonnet-4-20250514\"\n    }\n}"
+            },
+            {
+              "name": "Mock Mode",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{AUTH_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{API_URL}}/insights/status",
+                  "host": ["{{API_URL}}"],
+                  "path": ["insights", "status"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"success\": true,\n    \"data\": {\n        \"available\": true,\n        \"mode\": \"mock\",\n        \"message\": \"AI service running in mock mode (no API key configured)\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "description": "API health check endpoint",
+      "item": [
+        {
+          "name": "Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"API is healthy\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('ok');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_URL}}/health",
+              "host": ["{{API_URL}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the API is running and healthy.\n\n**Response:**\n- `status`: \"ok\" if healthy\n- `timestamp`: Current server time"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_URL}}/health",
+                  "host": ["{{API_URL}}"],
+                  "path": ["health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n    \"status\": \"ok\",\n    \"timestamp\": \"2024-01-15T10:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
