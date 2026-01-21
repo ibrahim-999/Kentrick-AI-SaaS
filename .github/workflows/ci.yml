@@ -39,6 +39,15 @@ jobs:
         working-directory: backend
         run: npx prisma generate
 
+      - name: Verify ESLint config exists
+        working-directory: backend
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in backend:"
+          ls -la
+          echo "ESLint config content:"
+          cat .eslintrc.json
+
       - name: Lint backend
         working-directory: backend
         run: npm run lint
