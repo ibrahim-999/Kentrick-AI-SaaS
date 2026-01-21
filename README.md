@@ -38,16 +38,16 @@ Services will be available at:
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable | Description | Default                                                      |
+|----------|-------------|--------------------------------------------------------------|
 | DATABASE_URL | PostgreSQL connection string | postgresql://kentrick:kentrick_secret@postgres:5432/kentrick |
-| JWT_SECRET | Secret key for JWT tokens | kentrick-super-secret-jwt-key |
-| ANTHROPIC_API_KEY | Anthropic API key for Claude | (optional) |
-| AWS_ACCESS_KEY_ID | S3 access key | minioadmin |
-| AWS_SECRET_ACCESS_KEY | S3 secret key | minioadmin |
-| S3_BUCKET | S3 bucket name | uploads |
-| S3_ENDPOINT | S3 endpoint URL | http://minio:9000 |
-| VITE_API_URL | Backend API URL for frontend | http://localhost:3000/api |
+| JWT_SECRET | Secret key for JWT tokens | kentrick-super-secret-jwt-key                                |
+| ANTHROPIC_API_KEY | Anthropic API key for Claude | (optional)                                                   |
+| AWS_ACCESS_KEY_ID | S3 access key | minioadmin                                                   |
+| AWS_SECRET_ACCESS_KEY | S3 secret key | minioadmin                                                   |
+| S3_BUCKET | S3 bucket name | uploads                                                      |
+| S3_ENDPOINT | S3 endpoint URL | http://minio:9003                                            |
+| VITE_API_URL | Backend API URL for frontend | http://localhost:3000/api                                    |
 
 ## API Endpoints
 
